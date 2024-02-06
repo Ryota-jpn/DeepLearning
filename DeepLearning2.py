@@ -4,6 +4,7 @@ import numpy as np
 import keras
 from keras import layers
 
+# CIFAR-10から画像データを取得
 from keras.datasets import cifar10
 (x_train, y_train),(x_test, y_test) = cifar10.load_data()
 x_train, x_test = x_train / 255.0, x_test / 255.0
@@ -36,6 +37,7 @@ def disp_testdata(xdata, namedata):
 disp_testdata(cat_train, "ネコ")
 disp_testdata(dog_train, "イヌ")
 
+# 取得した学習用画像に猫と犬を設定
 class_names = ["ネコ", "イヌ"]
 
 x_train = np.concatenate((cat_train, dog_train))
@@ -58,6 +60,7 @@ for i in range(20):
     plt.xlabel(class_names[y_test[i]])
 plt.show()
 
+# 学習画像を基に学習モデルを作成
 model = keras.models.Sequential()
 model.add(layers.Conv2D(32, (5, 5), activation="relu", input_shape=(32, 32, 3)))
 model.add(layers.MaxPooling2D((2, 2)))
@@ -72,6 +75,7 @@ model.add(layers.Dense(32, activation="relu"))
 model.add(layers.Dense(2, activation="softmax")) #2
 model.summary(line_length=120)
 
+# 作成した学習モデルを基に学習させる
 model.compile(optimizer="adam",
               loss="sparse_categorical_crossentropy",
               metrics=["accuracy"])
@@ -80,6 +84,7 @@ history = model.fit(x_train, y_train, epochs=30, #30
 test_loss, test_acc = model.evaluate(x_test, y_test)
 print(f"テストデータの正解率は{test_acc:.2%}です。")
 
+# 学習結果を確認
 param = [["正解率", "accuracy", "val_accuracy"],
          ["誤差", "loss", "val_loss"]]
 plt.figure(figsize=(10,4))
@@ -94,6 +99,7 @@ for i in range(2):
         plt.ylim([0, 1])
 plt.show()
 
+# 学習用画像を増幅させる
 from keras.preprocessing.image import ImageDataGenerator
 
 datagen = ImageDataGenerator(
@@ -129,11 +135,13 @@ for i in range(6):
 
 plt.show()
 
+# 増幅データで再度学習させる
 history = model.fit(datagen.flow(x_train, y_train), epochs = 30,
                     validation_data = (x_test, y_test))
 test_loss, test_acc = model.evaluate(x_test, y_test)
 print(f"テストデータの正解率は{test_acc:.2%}です。")
 
+# 学習結果の確認（2回目）
 param = [["正解率", "accuracy", "val_accuracy"],
          ["誤差", "loss", "val_loss"]]
 plt.figure(figsize=(10,4))
@@ -148,6 +156,7 @@ for i in range(2):
         plt.ylim([0,1])
 plt.show()
 
+# 識別用画像を渡して識別結果を確認
 pre = model.predict(x_test)
 
 plt.figure(figsize=(12,10))
